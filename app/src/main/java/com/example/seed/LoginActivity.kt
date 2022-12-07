@@ -13,20 +13,23 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
     companion object {
         private const val GOOGLE_CLIENT_ID = "658086026451-u8c5epi2fgaeh1p81k3udgcoqtf7cm0r.apps.googleusercontent.com"
-        private const val SIGN_IN_TAG = "SIGN IN"
+        private const val TAG = "SIGN IN"
     }
 
     private lateinit var binding : ActivityLoginBinding
     private lateinit var gso : GoogleSignInOptions
     private lateinit var gsc : GoogleSignInClient
+    private lateinit var auth : FirebaseAuth
+
     private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     { result ->
-        Log.d(SIGN_IN_TAG, "${result.resultCode} ${result.data.toString()}")
+        Log.d(TAG, "${result.resultCode} ${result.data.toString()}")
         if (result.resultCode == Activity.RESULT_OK) {
             handleSuccessfulSignIn(result)
         } else {
@@ -47,6 +50,8 @@ class LoginActivity : AppCompatActivity() {
 
         gsc = GoogleSignIn.getClient(this, gso)
 
+        auth = FirebaseAuth.getInstance()
+
         binding.btnSignUp.setOnClickListener {
             handleGoogleSignUp()
         }
@@ -63,8 +68,7 @@ class LoginActivity : AppCompatActivity() {
     private fun handleSuccessfulSignIn(signInResult: ActivityResult) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(signInResult.data)
         val userResult = task.getResult(ApiException::class.java)
-        Log.d(SIGN_IN_TAG, "${userResult.id} ${userResult.email}")
-        Toast.makeText(this, "${userResult.displayName}", Toast.LENGTH_SHORT).show()
+        Log.d(TAG, "${userResult.id} ${userResult.email}")
     }
 
     private fun handleGoogleSignUp() {
