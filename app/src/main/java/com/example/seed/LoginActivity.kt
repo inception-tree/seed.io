@@ -13,9 +13,6 @@ import com.example.seed.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 
 import com.google.android.gms.auth.api.identity.SignInClient
 
@@ -30,12 +27,9 @@ class LoginActivity : AppCompatActivity() {
         private const val GOOGLE_CLIENT_ID = "658086026451-u8c5epi2fgaeh1p81k3udgcoqtf7cm0r.apps.googleusercontent.com"
         private const val TAG = "LogInActivity"
         const val ACCOUNT_KEY = "ACCOUNT"
-        const val USER_KEY = "USER"
     }
 
     private lateinit var binding : ActivityLoginBinding
-    private lateinit var gso : GoogleSignInOptions
-    private lateinit var gsc : GoogleSignInClient
 
     private lateinit var signInClient: SignInClient
     private lateinit var auth : FirebaseAuth
@@ -47,14 +41,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        gso = GoogleSignInOptions
-            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(GOOGLE_CLIENT_ID)
-            .requestEmail()
-            .build()
-
-        gsc = GoogleSignIn.getClient(this, gso)
 
         auth = FirebaseAuth.getInstance()
 
