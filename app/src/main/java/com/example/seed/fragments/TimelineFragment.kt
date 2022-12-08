@@ -7,9 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import com.example.seed.R
 import com.example.seed.adapter.TimelineAdapter
+import com.example.seed.data.Comment
 import com.example.seed.data.Post
 import com.example.seed.databinding.FragmentTimelineBinding
+import com.example.seed.viewmodel.CommentViewModel
 import com.example.seed.viewmodel.PostViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -34,16 +38,38 @@ class TimelineFragment : Fragment() {
             this,
             FirebaseFirestore.getInstance().collection("posts")
         )
-        //adapter = TempAdapter()
-        binding.recyclerPost.adapter = adapter
 
-        binding.fabAddPost.setOnClickListener {
-            postViewModel.createPost(
-                Post(body = "Yo template")
-            )
-        }
+        binding.recyclerPost.adapter = adapter
+        handleOnClickTag(adapter)
+        handleOnClickAddPost()
 
         return binding.root
+    }
+
+    private fun handleOnClickAddPost() {
+        binding.fabAddPost.setOnClickListener {
+            // navigate to create post fragment
+            it.findNavController().navigate(R.id.newPostFragment)
+        }
+    }
+
+    private fun handleOnClickTag(adapter: TimelineAdapter) {
+        binding.btnTag0.setOnClickListener {
+            val queryByTag = FirebaseFirestore.getInstance().collection("posts")
+            adapter.setQuery(queryByTag)
+        }
+        binding.btnTag1.setOnClickListener {
+            val queryByTag = FirebaseFirestore.getInstance().collection("posts").whereEqualTo("tag", 1)
+            adapter.setQuery(queryByTag)
+        }
+        binding.btnTag2.setOnClickListener {
+            val queryByTag = FirebaseFirestore.getInstance().collection("posts").whereEqualTo("tag", 2)
+            adapter.setQuery(queryByTag)
+        }
+        binding.btnTag3.setOnClickListener {
+            val queryByTag = FirebaseFirestore.getInstance().collection("posts").whereEqualTo("tag", 3)
+            adapter.setQuery(queryByTag)
+        }
     }
 
     override fun onStart() {
