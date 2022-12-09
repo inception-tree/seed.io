@@ -47,16 +47,16 @@ class TimelineAdapter(private val context: TimelineFragment, query: Query?) : Fi
             }
 
             if (userIdToUser.containsKey(post.authorid)){
-                setPostUsernameAndProfile(userIdToUser[post.authorid]!!)
+                setPostAuthorInfo(userIdToUser[post.authorid]!!)
             } else {
                 UserViewModel.getUserInfo(
                     userId = post.authorid,
-                    handleUserFound = ::setPostUsernameAndProfile
+                    handleUserFound = ::setPostAuthorInfo
                 )
             }
         }
 
-        private fun setPostUsernameAndProfile(user: User){
+        private fun setPostAuthorInfo(user: User){
             binding.tvUsername.text = user.username
             displayPostProfileImage(user.imgURL)
             userIdToUser[user.uid] = user

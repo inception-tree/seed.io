@@ -47,14 +47,14 @@ class UserPostAdapter(private val context: ProfileFragment, query: Query?) : Fir
             if (currentUser.uid.isEmpty()){
                 UserViewModel.getUserInfo(
                     userId = post.authorid,
-                    handleUserFound = ::setPostUsernameAndProfile
+                    handleUserFound = ::setPostAuthorInfo
                 )
             } else {
-                setPostUsernameAndProfile(currentUser)
+                setPostAuthorInfo(currentUser)
             }
         }
 
-        private fun setPostUsernameAndProfile(user: User){
+        private fun setPostAuthorInfo(user: User){
             binding.tvUsername.text = user.username
             displayPostProfileImage(user.imgURL)
             currentUser = user
