@@ -4,10 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.seed.data.Post
+import com.example.seed.data.User
 import com.example.seed.databinding.PostRowBinding
 import com.example.seed.fragments.TimelineFragment
 import com.example.seed.fragments.TimelineFragmentDirections
+import com.example.seed.viewmodel.UserViewModel
 import com.google.firebase.firestore.Query
 
 class TimelineAdapter(private val context: TimelineFragment, query: Query?) : FirestoreAdapter<TimelineAdapter.ViewHolder>(query){
@@ -39,9 +42,23 @@ class TimelineAdapter(private val context: TimelineFragment, query: Query?) : Fi
                 val action = TimelineFragmentDirections.actionTimelineFragmentToPostDetailFragment(postId)
                 it.findNavController().navigate(action)
             }
+
+            UserViewModel.getUserInfo(
+                userId = post.authorid,
+                handleUserFound = ::setPostUsernameAndProfile
+            )
+        }
+
+        private fun setPostUsernameAndProfile(user: User){
+            binding.tvUsername.text = user.username
+            displayPostProfileImage(user.imgURL)
+        }
+
+        private fun displayPostProfileImage(profileImgURL: String) {
+            if (profileImgURL.isEmpty()) return
+            Glide.with(context)
+                .load(profileImgURL)
+                .into(binding.ivProfile)
         }
     }
-
-
-
 }

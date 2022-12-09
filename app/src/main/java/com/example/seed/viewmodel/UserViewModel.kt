@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.example.seed.data.User
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
@@ -39,14 +38,14 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         // look at LoginActivity.handleSuccessfulSignIn for reference
         fun getUserInfo(
             userId: String,
-            handleUserFound: (DocumentSnapshot) -> Unit = {},
+            handleUserFound: (User) -> Unit = {},
             handleUserNotFound: (String) -> Unit = {}){
             userCollection.document(userId).get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful){
                         val document = task.result
                         if (document.exists()){
-                            handleUserFound(document)
+                            handleUserFound(document.toObject(User::class.java)!!)
                         } else {
                             handleUserNotFound(userId)
                         }

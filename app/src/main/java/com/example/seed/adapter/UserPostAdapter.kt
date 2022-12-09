@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.seed.data.Post
+import com.example.seed.data.User
 import com.example.seed.databinding.PostRowBinding
 import com.example.seed.fragments.ProfileFragment
-import com.example.seed.fragments.TimelineFragment
 import com.example.seed.viewmodel.UserViewModel
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 
 
@@ -34,22 +33,26 @@ class UserPostAdapter(private val context: ProfileFragment, query: Query?) : Fir
         fun bind(position: Int) {
             val snapshot = getSnapshot(position)
             val postId = getSnapshotId(position)
-            val post = snapshot.toObject(Post::class.java)
-            Log.d("adapter", post!!.body)
+            val post = snapshot.toObject(Post::class.java)!!
+
             binding.tvTitle.text = post.title
-            UserViewModel.getUserInfo(post.authorid, ::setUsername)
             binding.tvContents.text = post.body
             binding.tvLikeCount.text = post.likedBy.size.toString()
             binding.tvCommentCount.text = post.numberOfComments.toString()
             binding.ivLike.setOnClickListener {
                 context.likePost(postId)
             }
+
+            setPostUsername(post.authorid)
         }
     }
 
-    fun setUsername(document: DocumentSnapshot) {
-        Log.d("document tag", document.toString())
-        binding.tvUsername.text = document.getString("username")
+    private fun setPostUsername(userId: String){
+        UserViewModel.getUserInfo(userId, ::setUsername)
+    }
+
+    private fun setUsername(user: User) {
+        binding.tvUsername.text = user.username
     }
 }
 
