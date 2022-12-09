@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.seed.data.Post
 import com.example.seed.data.User
 import com.example.seed.databinding.PostRowBinding
@@ -14,11 +15,11 @@ import com.google.firebase.firestore.Query
 
 class UserPostAdapter(private val context: ProfileFragment, query: Query?) : FirestoreAdapter<UserPostAdapter.ViewHolder>(query) {
 
-    private lateinit var binding: PostRowBinding
+    var currentUser = User()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         Log.d("adapter", "on create view holder")
-        binding = PostRowBinding
+        val binding = PostRowBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
@@ -43,16 +44,28 @@ class UserPostAdapter(private val context: ProfileFragment, query: Query?) : Fir
                 context.likePost(postId)
             }
 
-            setPostUsername(post.authorid)
+            if (currentUser.uid.isEmpty()){
+                UserViewModel.getUserInfo(
+                    userId = post.authorid,
+                    handleUserFound = ::setPostUsernameAndProfile
+                )
+            } else {
+                setPostUsernameAndProfile(currentUser)
+            }
         }
-    }
 
-    private fun setPostUsername(userId: String){
-        UserViewModel.getUserInfo(userId, ::setUsername)
-    }
+        private fun setPostUsernameAndProfile(user: User){
+            binding.tvUsername.text = user.username
+            displayPostProfileImage(user.imgURL)
+            currentUser = user
+        }
 
-    private fun setUsername(user: User) {
-        binding.tvUsername.text = user.username
+        private fun displayPostProfileImage(profileImgURL: String) {
+            if (profileImgURL.isEmpty()) return
+            Glide.with(context)
+                .load(profileImgURL)
+                .into(binding.ivProfile)
+        }
     }
 }
 

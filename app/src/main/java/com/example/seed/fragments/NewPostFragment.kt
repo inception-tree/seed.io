@@ -22,21 +22,14 @@ class NewPostFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private var userId : String = ProfileFragment.NOT_LOGGED_IN_USER_ID
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentNewPostBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[PostViewModel::class.java]
 
-        var categoryAdapter = ArrayAdapter.createFromResource(
+        val categoryAdapter = ArrayAdapter.createFromResource(
             requireActivity(),
             R.array.category_array,
             android.R.layout.simple_spinner_item
@@ -64,9 +57,8 @@ class NewPostFragment : Fragment() {
             }
         }
 
-
         return binding.root
-    } }
+    }
 
     private fun validInput() : Boolean {
         return binding.etContents.text.isNotEmpty() && binding.etTitle.text.isNotEmpty()

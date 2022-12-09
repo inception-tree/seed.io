@@ -15,6 +15,9 @@ import com.google.firebase.firestore.Query
 
 class TimelineAdapter(private val context: TimelineFragment, query: Query?) : FirestoreAdapter<TimelineAdapter.ViewHolder>(query){
 
+    // cache layer for user (to avoid querying for the same user)
+    val userIdToUser = mutableMapOf<String, User>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = PostRowBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
@@ -43,15 +46,20 @@ class TimelineAdapter(private val context: TimelineFragment, query: Query?) : Fi
                 it.findNavController().navigate(action)
             }
 
-            UserViewModel.getUserInfo(
-                userId = post.authorid,
-                handleUserFound = ::setPostUsernameAndProfile
-            )
+            if (userIdToUser.containsKey(post.authorid)){
+                setPostUsernameAndProfile(userIdToUser[post.authorid]!!)
+            } else {
+                UserViewModel.getUserInfo(
+                    userId = post.authorid,
+                    handleUserFound = ::setPostUsernameAndProfile
+                )
+            }
         }
 
         private fun setPostUsernameAndProfile(user: User){
             binding.tvUsername.text = user.username
             displayPostProfileImage(user.imgURL)
+            userIdToUser[user.uid] = user
         }
 
         private fun displayPostProfileImage(profileImgURL: String) {

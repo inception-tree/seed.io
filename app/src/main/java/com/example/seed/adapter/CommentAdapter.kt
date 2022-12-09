@@ -14,6 +14,9 @@ import com.google.firebase.firestore.Query
 
 class CommentAdapter(private val context: PostDetailFragment, query: Query?) : FirestoreAdapter<CommentAdapter.ViewHolder>(query){
 
+    // cache layer for user (to avoid querying for the same user)
+    val userIdToUser = mutableMapOf<String, User>()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         Log.d("comment adapter", "on create view holder")
         val binding = CommentRowBinding
@@ -34,16 +37,21 @@ class CommentAdapter(private val context: PostDetailFragment, query: Query?) : F
             if (comment != null) {
                 binding.tvContents.text = comment.text
 
-                UserViewModel.getUserInfo(
-                    userId = comment.authorid,
-                    handleUserFound = ::setCommentUsernameAndProfile
-                )
+                if (userIdToUser.containsKey(comment.authorid)){
+                    setCommentUsernameAndProfile(userIdToUser[comment.authorid]!!)
+                } else {
+                    UserViewModel.getUserInfo(
+                        userId = comment.authorid,
+                        handleUserFound = ::setCommentUsernameAndProfile
+                    )
+                }
             }
         }
 
         private fun setCommentUsernameAndProfile(user: User){
             binding.tvUsername.text = user.username
             displayPostProfileImage(user.imgURL)
+            userIdToUser[user.uid] = user
         }
 
         private fun displayPostProfileImage(profileImgURL: String) {

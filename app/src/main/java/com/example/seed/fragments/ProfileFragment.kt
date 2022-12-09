@@ -81,4 +81,14 @@ class ProfileFragment : Fragment() {
     fun likePost(postId: String){
         postViewModel.likePostByUser(postId, userId);
     }
+
+    override fun onStart() {
+        super.onStart()
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
+    }
 }
