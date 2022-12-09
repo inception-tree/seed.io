@@ -8,14 +8,18 @@ import com.example.seed.data.Post
 import com.example.seed.databinding.PostRowBinding
 import com.example.seed.fragments.ProfileFragment
 import com.example.seed.fragments.TimelineFragment
+import com.example.seed.viewmodel.UserViewModel
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 
 
 class UserPostAdapter(private val context: ProfileFragment, query: Query?) : FirestoreAdapter<UserPostAdapter.ViewHolder>(query) {
 
+    private lateinit var binding: PostRowBinding
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         Log.d("adapter", "on create view holder")
-        val binding = PostRowBinding
+        binding = PostRowBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
@@ -32,6 +36,8 @@ class UserPostAdapter(private val context: ProfileFragment, query: Query?) : Fir
             val postId = getSnapshotId(position)
             val post = snapshot.toObject(Post::class.java)
             Log.d("adapter", post!!.body)
+            binding.tvTitle.text = post.title
+            UserViewModel.getUserInfo(post.authorid, ::setUsername)
             binding.tvContents.text = post.body
             binding.tvLikeCount.text = post.likedBy.size.toString()
             binding.tvCommentCount.text = post.numberOfComments.toString()
@@ -39,6 +45,11 @@ class UserPostAdapter(private val context: ProfileFragment, query: Query?) : Fir
                 context.likePost(postId)
             }
         }
+    }
+
+    fun setUsername(document: DocumentSnapshot) {
+        Log.d("document tag", document.toString())
+        binding.tvUsername.text = document.getString("username")
     }
 }
 

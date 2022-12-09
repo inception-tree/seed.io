@@ -8,18 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.seed.R
-import com.example.seed.adapter.TimelineAdapter
 import com.example.seed.adapter.UserPostAdapter
 import com.example.seed.databinding.FragmentProfileBinding
-import com.example.seed.databinding.FragmentTimelineBinding
 import com.example.seed.viewmodel.PostViewModel
 import com.example.seed.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,7 +38,6 @@ class ProfileFragment : Fragment() {
     private lateinit var userViewModel: UserViewModel
     private var userId : String = NOT_LOGGED_IN_USER_ID
     private val postCollection = FirebaseFirestore.getInstance().collection("posts")
-    private val userCollection = FirebaseFirestore.getInstance().collection("users")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,24 +63,21 @@ class ProfileFragment : Fragment() {
             Log.d(TAG, userId)
         }
         displayUserPosts()
-        displayUserInfo()
+        UserViewModel.getUserInfo(userId, ::displayUserInfo, ::displayUserNotFound)
         return binding.root
     }
 
-    private fun displayUserInfo() {
-        userCollection
-            .document(userId)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    binding.tvUsername.text = document.getString("username")
-                    binding.tvBio.text = document.getString("bio")
-                    displayProfileImage(document)
-                } else {
-                    Log.d(TAG, "No such document")
-                }
-            }
+    private fun displayUserInfo(document: DocumentSnapshot) {
+        binding.tvUsername.text = document.getString("username")
+        binding.tvBio.text = document.getString("bio")
+        displayProfileImage(document)
     }
+
+    private fun displayUserNotFound(userId: String) {
+        binding.tvUsername.text = "User not found"
+        binding.tvBio.text = "User not found"
+    }
+
 
     private fun displayProfileImage(document: DocumentSnapshot) {
         val profileImgURL = document.getString("imgURL")
@@ -107,6 +98,6 @@ class ProfileFragment : Fragment() {
 //
     fun likePost(postId: String){
         // TODO: replace "01" with actual userId
-        postViewModel.likePostByUser(postId, "01");
+        postViewModel.likePostByUser(postId, userId);
     }
 }
