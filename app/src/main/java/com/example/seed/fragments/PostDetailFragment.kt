@@ -18,6 +18,7 @@ import com.example.seed.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class PostDetailFragment : Fragment() {
 
@@ -41,6 +42,7 @@ class PostDetailFragment : Fragment() {
             this,
             FirebaseFirestore.getInstance().collection(CommentViewModel.COLLECTION)
                 .whereEqualTo("postId", postId)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
         )
     }
 
