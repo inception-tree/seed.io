@@ -109,12 +109,6 @@ class PostDetailFragment : Fragment() {
         }
     }
 
-    private fun reloadFragment(it: View) {
-        val action = PostDetailFragmentDirections.actionPostDetailFragmentToPostDetailFragment(
-            postId!!
-        )
-        it.findNavController().navigate(action)
-    }
 
     private fun setLikePostListener() {
         binding.ivLike.setOnClickListener {
