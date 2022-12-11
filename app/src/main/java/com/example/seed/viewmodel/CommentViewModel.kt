@@ -28,6 +28,7 @@ class CommentViewModel(application: Application) : AndroidViewModel(application)
                     Log.d(LOG_TAG, "${it.message}")
                     Toast.makeText(getApplication(),
                         "Failed to add comment", Toast.LENGTH_SHORT).show()
+
                 }
 
             // increment like
