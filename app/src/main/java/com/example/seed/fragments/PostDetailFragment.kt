@@ -104,9 +104,6 @@ class PostDetailFragment : Fragment() {
                         commentViewModel.addComment(newComment)
                         binding.commentText.text.clear()
                     }
-                    if (postId != null) {
-                        reloadFragment(it)
-                    }
                 }
             }
         }
